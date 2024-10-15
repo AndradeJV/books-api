@@ -15,10 +15,13 @@
   "dependencies": {
     "@fastify/mysql": "^5.0.1",
     "axios": "^1.7.7",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.5",
     "fastify": "^5.0.0",
     "fastify-mongodb": "^4.1.1",
     "fastify-mysql": "^2.1.0",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.3"
   },
   "devDependencies": {
