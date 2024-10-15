@@ -1,14 +1,20 @@
-async function authorsRoutes(fastify, options) {
-  fastify.get('/authors', async (request, reply) => {
-    try {
-      const query = 'SELECT * FROM authors'
-      const [authors] = await fastify.mysql.query(query)
+const loginMiddleware = require('../middlewares/index')
 
-      reply.send({ success: true, authors })
-    } catch (error) {
-      reply.status(400).send({ error: error.message })
+async function authorsRoutes(fastify, options) {
+  fastify.get(
+    '/authors',
+    { preHandler: loginMiddleware },
+    async (request, reply) => {
+      try {
+        const query = 'SELECT * FROM authors'
+        const [authors] = await fastify.mysql.query(query)
+
+        reply.send({ success: true, authors })
+      } catch (error) {
+        reply.status(400).send({ error: error.message })
+      }
     }
-  })
+  )
 
   fastify.get('/authors/:id', async (request, reply) => {
     try {

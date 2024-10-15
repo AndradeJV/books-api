@@ -2,10 +2,14 @@ const fastify = require('fastify')({ logger: true })
 const mysqlConnector = require('./database/books')
 const booksRouter = require('./routes/booksRouter')
 const authorsRouter = require('./routes/authorsRouter')
+const loginRouter = require('./routes/loginRouter')
+const userRouter = require('./routes/userRouter')
 
 fastify.register(mysqlConnector)
 fastify.register(booksRouter)
 fastify.register(authorsRouter)
+fastify.register(loginRouter)
+fastify.register(userRouter)
 
 const start = async () => {
   try {
