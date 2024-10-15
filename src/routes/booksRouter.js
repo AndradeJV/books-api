@@ -1,3 +1,5 @@
+const axios = require('axios')
+
 async function booksRoutes(fastify, options) {
   fastify.get('/books', async (request, reply) => {
     try {
@@ -7,6 +9,43 @@ async function booksRoutes(fastify, options) {
       reply.send({ success: true, result })
     } catch (error) {
       reply.status(400).send({ error: error.message })
+    }
+  })
+
+  fastify.get('/books/details/:pokemon', async (request, reply) => {
+    try {
+      const pokemon = request.params.pokemon
+      const response = await axios.get(
+        `https://pokeapi.co/api/v2/pokemon/${pokemon}`
+      )
+
+      if (!response.data.abilities || response.data.abilities.length === 0) {
+        return reply
+          .status(404)
+          .send({ error: 'No abilities found for this Pokémon.' })
+      }
+
+      const abilityName = response.data.abilities[0].ability.name
+      const [pokemonAbilities] = await fastify.mysql.query(
+        'SELECT * FROM pokemon_abilities WHERE ability_name = ?',
+        [abilityName]
+      )
+
+      if (pokemonAbilities.length === 0) {
+        const query = `INSERT INTO pokemon_abilities (ability_name, ability_url, is_hidden, slot) VALUES (?, ?, ?, ?)`
+        const [result] = await fastify.mysql.query(query, [
+          abilityName,
+          response.data.abilities[0].ability.url,
+          response.data.abilities[0].is_hidden,
+          response.data.abilities[0].slot,
+        ])
+
+        return reply.send({ success: true, result })
+      }
+
+      return reply.send({ success: true, abilities: pokemonAbilities })
+    } catch (error) {
+      return reply.status(400).send({ error: error.message })
     }
   })
 
